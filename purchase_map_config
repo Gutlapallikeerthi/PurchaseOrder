@@ -1,0 +1,57 @@
+  CreateMap<PurchaseorderCreateOnly, Purchaseorder>().ReverseMap();
+  CreateMap<PurchaseorderReadOnly, Purchaseorder>().ReverseMap();
+  CreateMap<PurchaseorderSubReadOnly, PurchaseorderSub>().ReverseMap();
+
+public virtual DbSet<Purchaseorder> Purchaseorders { get; set; }
+
+public virtual DbSet<PurchaseorderSub> PurchaseorderSubs { get; set; }
+
+ modelBuilder.Entity<Purchaseorder>(entity =>
+ {
+     entity.HasKey(e => e.POId).HasName("PRIMARY");
+
+     entity.ToTable("purchaseorder");
+
+
+
+     entity.HasIndex(e => e.POId, "POId").IsUnique();
+
+     entity.HasIndex(e => e.VendId, "VendId");
+
+     entity.Property(e => e.POId)
+         .ValueGeneratedNever()
+         .HasColumnName("POId");
+
+
+     entity.Property(e => e.Podate)
+         .HasColumnType("datetime")
+         .HasColumnName("PODate");
+     entity.Property(e => e.Pono)
+         .HasMaxLength(50)
+         .HasColumnName("PONo");
+
+     entity.Property(e => e.VendId).HasDefaultValueSql("'0'");
+     entity.HasMany(d => d.PurchaseorderSubs).WithOne(p => p.Purchaseorder)
+    .HasForeignKey(p => p.POId)
+    .OnDelete(DeleteBehavior.Cascade);
+ });
+
+
+ modelBuilder.Entity<PurchaseorderSub>(entity =>
+ {
+     entity.HasKey(e => e.POSubId).HasName("PRIMARY");
+     entity.ToTable("purchaseordersub");
+
+     entity.HasIndex(e => e.ItemId, "ItemId");
+
+     entity.Property(e => e.ItemId).HasDefaultValueSql("'0'");
+     entity.Property(e => e.Qty).HasDefaultValueSql("'0'");
+
+     entity.Property(e => e.SlNo).HasDefaultValueSql("'0'");
+
+ });
+
+
+ <MudNavLink Href="/AddPurchaseOrder" Icon="fa fa-box" Class="custom-nav-menu" Match="NavLinkMatch.Prefix">Purchase Order</MudNavLink>
+
+
